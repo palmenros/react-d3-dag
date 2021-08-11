@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import clone from 'clone';
-import Tree from 'react-d3-tree';
-import { version } from 'react-d3-tree/package.json';
+// import Tree from 'react-d3-tree';
+// import { version } from 'react-d3-tree/package.json';
+import Dag from 'react-d3-dag';
 import Switch from './components/Switch';
 import MixedNodeElement from './components/MixedNodeElement';
 import PureSvgNodeElement from './components/PureSvgNodeElement';
@@ -12,15 +13,16 @@ import orgChartJson from './examples/org-chart.json';
 import flareJson from './examples/d3-hierarchy-flare.json';
 import reactTree from './examples/reactRepoTree';
 
+const version = 'DAG'
 console.log('Demo React version: ', React.version);
 
 const customNodeFnMapping = {
   svg: {
     description: 'Default - Pure SVG node & label (IE11 compatible)',
-    fn: (rd3tProps, appState) => (
+    fn: (rd3dagProps, appState) => (
       <PureSvgNodeElement
-        nodeDatum={rd3tProps.nodeDatum}
-        toggleNode={rd3tProps.toggleNode}
+        nodeDatum={rd3dagProps.nodeDatum}
+        toggleNode={rd3dagProps.toggleNode}
         orientation={appState.orientation}
       />
     ),
@@ -584,11 +586,11 @@ class App extends Component {
               Total nodes in tree: {this.state.totalNodeCount}
             </div>
             <div ref={tc => (this.treeContainer = tc)} className="tree-container">
-              <Tree
+              <Dag
                 data={this.state.data}
                 renderCustomNodeElement={
                   this.state.renderCustomNodeElement
-                    ? rd3tProps => this.state.renderCustomNodeElement(rd3tProps, this.state)
+                    ? rd3dagProps => this.state.renderCustomNodeElement(rd3dagProps, this.state)
                     : undefined
                 }
                 rootNodeClassName="demo-node"

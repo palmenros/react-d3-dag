@@ -32,15 +32,15 @@ const PureSvgNodeElement = ({ nodeDatum, orientation, toggleNode, onNodeClick })
   return (
     <>
       <circle r={20} onClick={toggleNode}></circle>
-      <g className="rd3t-label">
+      <g className="rd3dag-label">
         <text
-          className="rd3t-label__title"
+          className="rd3dag-label__title"
           {...textLayout[orientation].title}
           onClick={onNodeClick}
         >
           {nodeDatum.name}
         </text>
-        <text className="rd3t-label__attributes" {...textLayout[orientation].attributes}>
+        <text className="rd3dag-label__attributes" {...textLayout[orientation].attributes}>
           {nodeDatum.attributes &&
             Object.entries(nodeDatum.attributes).map(([labelKey, labelValue], i) => (
               <tspan key={`${labelKey}-${i}`} {...textLayout[orientation].attribute}>

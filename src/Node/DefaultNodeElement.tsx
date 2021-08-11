@@ -37,11 +37,11 @@ const DefaultNodeElement: React.FunctionComponent<DefaultNodeElementProps> = ({
       onMouseOver={onNodeMouseOver}
       onMouseOut={onNodeMouseOut}
     ></circle>
-    <g className="rd3t-label">
-      <text className="rd3t-label__title" {...textLayout.title}>
+    <g className="rd3dag-label">
+      <text className="rd3dag-label__title" {...textLayout.title}>
         {nodeDatum.name}
       </text>
-      <text className="rd3t-label__attributes">
+      <text className="rd3dag-label__attributes">
         {nodeDatum.attributes &&
           Object.entries(nodeDatum.attributes).map(([labelKey, labelValue], i) => (
             <tspan key={`${labelKey}-${i}`} {...textLayout.attribute}>

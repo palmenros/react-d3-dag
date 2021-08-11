@@ -1,20 +1,19 @@
 import React, { SyntheticEvent } from 'react';
-import { HierarchyPointNode } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 
 import { Orientation, Point, TreeNodeDatum, RenderCustomNodeElementFn } from '../types/common';
 import DefaultNodeElement from './DefaultNodeElement';
+import {DagNode} from 'd3-dag';
 
 type NodeEventHandler = (
-  hierarchyPointNode: HierarchyPointNode<TreeNodeDatum>,
+  dagNode: DagNode<TreeNodeDatum>,
   evt: SyntheticEvent
 ) => void;
 
 type NodeProps = {
   data: TreeNodeDatum;
   position: Point;
-  hierarchyPointNode: HierarchyPointNode<TreeNodeDatum>;
-  parent: HierarchyPointNode<TreeNodeDatum> | null;
+  dagNode: DagNode<TreeNodeDatum>;
   nodeClassName: string;
   nodeSize: {
     x: number;
@@ -42,7 +41,6 @@ export default class Node extends React.Component<NodeProps, NodeState> {
   state = {
     transform: this.setTransform(
       this.props.position,
-      this.props.parent,
       this.props.orientation,
       true
     ),
@@ -71,17 +69,11 @@ export default class Node extends React.Component<NodeProps, NodeState> {
 
   setTransform(
     position: NodeProps['position'],
-    parent: NodeProps['parent'],
     orientation: NodeProps['orientation'],
     shouldTranslateToOrigin = false
   ) {
     if (shouldTranslateToOrigin) {
-      const hasParent = parent !== null && parent !== undefined;
-      const originX = hasParent ? parent.x : 0;
-      const originY = hasParent ? parent.y : 0;
-      return orientation === 'horizontal'
-        ? `translate(${originY},${originX})`
-        : `translate(${originX},${originY})`;
+      return `translate(0,0)`;
     }
     return orientation === 'horizontal'
       ? `translate(${position.y},${position.x})`
@@ -111,24 +103,24 @@ export default class Node extends React.Component<NodeProps, NodeState> {
   }
 
   commitTransform() {
-    const { orientation, transitionDuration, position, parent } = this.props;
-    const transform = this.setTransform(position, parent, orientation);
+    const { orientation, transitionDuration, position } = this.props;
+    const transform = this.setTransform(position, orientation);
     this.applyTransform(transform, transitionDuration);
   }
 
   // TODO: needs tests
   renderNodeElement = () => {
-    const { data, hierarchyPointNode, renderCustomNodeElement } = this.props;
+    const { data, dagNode: hierarchyPointNode, renderCustomNodeElement } = this.props;
     if (typeof renderCustomNodeElement === 'function') {
       return renderCustomNodeElement({
-        hierarchyPointNode: hierarchyPointNode,
+        dagNode: hierarchyPointNode,
         nodeDatum: data,
         toggleNode: this.handleNodeToggle,
       });
     }
 
     return DefaultNodeElement({
-      hierarchyPointNode: hierarchyPointNode,
+      dagNode: hierarchyPointNode,
       nodeDatum: data,
       toggleNode: this.handleNodeToggle,
       onNodeClick: this.handleOnClick,
@@ -137,23 +129,23 @@ export default class Node extends React.Component<NodeProps, NodeState> {
     });
   };
 
-  handleNodeToggle = () => this.props.onNodeToggle(this.props.data.__rd3t.id);
+  handleNodeToggle = () => this.props.onNodeToggle(this.props.data.__rd3dag.id);
 
   handleOnClick = evt => {
-    this.props.onNodeClick(this.props.hierarchyPointNode, evt);
+    this.props.onNodeClick(this.props.dagNode, evt);
   };
 
   handleOnMouseOver = evt => {
-    this.props.onNodeMouseOver(this.props.hierarchyPointNode, evt);
+    this.props.onNodeMouseOver(this.props.dagNode, evt);
   };
 
   handleOnMouseOut = evt => {
-    this.props.onNodeMouseOut(this.props.hierarchyPointNode, evt);
+    this.props.onNodeMouseOut(this.props.dagNode, evt);
   };
 
   componentWillLeave(done) {
-    const { orientation, transitionDuration, position, parent } = this.props;
-    const transform = this.setTransform(position, parent, orientation, true);
+    const { orientation, transitionDuration, position } = this.props;
+    const transform = this.setTransform(position, orientation, true);
     this.applyTransform(transform, transitionDuration, 0, done);
   }
 
@@ -161,12 +153,12 @@ export default class Node extends React.Component<NodeProps, NodeState> {
     const { data, nodeClassName } = this.props;
     return (
       <g
-        id={data.__rd3t.id}
+        id={data.__rd3dag.id}
         ref={n => {
           this.nodeRef = n;
         }}
         style={this.state.initialStyle}
-        className={[data.children ? 'rd3t-node' : 'rd3t-leaf-node', nodeClassName].join(' ').trim()}
+        className={[data.children ? 'rd3dag-node' : 'rd3dag-leaf-node', nodeClassName].join(' ').trim()}
         transform={this.state.transform}
       >
         {this.renderNodeElement()}

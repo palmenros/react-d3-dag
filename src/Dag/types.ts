@@ -1,4 +1,4 @@
-import { HierarchyPointNode } from 'd3-hierarchy';
+import { DagNode } from 'd3-dag';
 import { SyntheticEvent } from 'react';
 import {
   Orientation,
@@ -12,13 +12,13 @@ import {
 } from '../types/common';
 
 export type TreeNodeEventCallback = (
-  node: HierarchyPointNode<TreeNodeDatum>,
+  node: DagNode<TreeNodeDatum>,
   event: SyntheticEvent
 ) => any;
 
 export type TreeLinkEventCallback = (
-  sourceNode: HierarchyPointNode<TreeNodeDatum>,
-  targetNode: HierarchyPointNode<TreeNodeDatum>,
+  sourceNode: DagNode<TreeNodeDatum>,
+  targetNode: DagNode<TreeNodeDatum>,
   event: SyntheticEvent
 ) => any;
 

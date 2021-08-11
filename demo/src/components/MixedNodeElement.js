@@ -26,7 +26,7 @@ const MixedNodeElement = ({ nodeData = {}, triggerNodeToggle, foreignObjectProps
           </ul>
           {nodeData.children && (
             <button style={{ textAlign: 'center' }} onClick={triggerNodeToggle}>
-              {nodeData.__rd3t.collapsed ? '⬅️ ➡️ Expand' : '➡️ ⬅️ Collapse'}
+              {nodeData.__rd3dag.collapsed ? '⬅️ ➡️ Expand' : '➡️ ⬅️ Collapse'}
             </button>
           )}
         </div>

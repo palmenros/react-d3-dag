@@ -2,56 +2,56 @@
 // libraries/frameworks.
 // Example: Next.js (https://github.com/vercel/next.js/blob/master/errors/css-npm.md)
 //
-// Since rd3t's CSS is bare bones to begin with, we provide all required styles as a template string,
+// Since rd3dag's CSS is bare bones to begin with, we provide all required styles as a template string,
 // which can be imported like any other TS/JS module and inlined into a `<style></style>` tag.
 
 export default `
 /* Tree */
-.rd3t-tree-container {
+.rd3dag-tree-container {
   width: 100%;
   height: 100%;
 }
 
-.rd3t-grabbable {
+.rd3dag-grabbable {
   cursor: move; /* fallback if grab cursor is unsupported */
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
 }
-.rd3t-grabbable:active {
+.rd3dag-grabbable:active {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
 }
 
 /* Node */
-.rd3t-node {
+.rd3dag-node {
   cursor: pointer;
   fill: #777;
   stroke: #000;
   stroke-width: 2;
 }
 
-.rd3t-leaf-node {
+.rd3dag-leaf-node {
   cursor: pointer;
   fill: transparent;
   stroke: #000;
   stroke-width: 2;
 }
 
-.rd3t-label__title {
+.rd3dag-label__title {
   stroke: #000;
   stroke-width: 1;
 }
 
-.rd3t-label__attributes {
+.rd3dag-label__attributes {
   stroke: #777;
   stroke-width: 1;
   font-size: smaller;
 }
 
 /* Link */
-.rd3t-link {
+.rd3dag-link {
   fill: none;
   stroke: #000;
 }

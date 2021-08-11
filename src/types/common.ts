@@ -1,5 +1,5 @@
 import { SyntheticEvent } from 'react';
-import { HierarchyPointNode } from 'd3-hierarchy';
+import { DagLink, DagNode } from 'd3-dag';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -16,20 +16,15 @@ export interface RawNodeDatum {
 
 export interface TreeNodeDatum extends RawNodeDatum {
   children?: TreeNodeDatum[];
-  __rd3t: {
+  __rd3dag: {
     id: string;
     depth: number;
     collapsed: boolean;
   };
 }
 
-export interface TreeLinkDatum {
-  source: HierarchyPointNode<TreeNodeDatum>;
-  target: HierarchyPointNode<TreeNodeDatum>;
-}
-
 export type PathFunctionOption = 'diagonal' | 'elbow' | 'straight' | 'step';
-export type PathFunction = (link: TreeLinkDatum, orientation: Orientation) => string;
+export type PathFunction = (link: DagLink<TreeNodeDatum>, orientation: Orientation) => string;
 export type PathClassFunction = PathFunction;
 
 export type SyntheticEventHandler = (evt: SyntheticEvent) => void;
@@ -43,10 +38,10 @@ export interface CustomNodeElementProps {
    */
   nodeDatum: TreeNodeDatum;
   /**
-   * The D3 `HierarchyPointNode` representation of the node, which wraps `nodeDatum`
+   * The D3 `DagNode` representation of the node, which wraps `nodeDatum`
    * with additional properties.
    */
-  hierarchyPointNode: HierarchyPointNode<TreeNodeDatum>;
+  dagNode: DagNode<TreeNodeDatum>;
   /**
    * Toggles the expanded/collapsed state of the node.
    *
@@ -56,4 +51,4 @@ export interface CustomNodeElementProps {
   toggleNode: () => void;
 }
 
-export type RenderCustomNodeElementFn = (rd3tNodeProps: CustomNodeElementProps) => JSX.Element;
+export type RenderCustomNodeElementFn = (rd3dagNodeProps: CustomNodeElementProps) => JSX.Element;

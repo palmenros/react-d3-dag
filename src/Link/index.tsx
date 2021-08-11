@@ -1,10 +1,9 @@
 import React, { SyntheticEvent } from 'react';
 import { linkHorizontal, linkVertical } from 'd3-shape';
-import { HierarchyPointNode } from 'd3-hierarchy';
+import { DagLink, DagNode } from 'd3-dag';
 import { select } from 'd3-selection';
 import {
   Orientation,
-  TreeLinkDatum,
   PathFunctionOption,
   PathFunction,
   TreeNodeDatum,
@@ -12,13 +11,13 @@ import {
 } from '../types/common';
 
 type LinkEventHandler = (
-  source: HierarchyPointNode<TreeNodeDatum>,
-  target: HierarchyPointNode<TreeNodeDatum>,
+  source: DagNode<TreeNodeDatum>,
+  target: DagNode<TreeNodeDatum>,
   evt: SyntheticEvent
 ) => void;
 
 interface LinkProps {
-  linkData: TreeLinkDatum;
+  linkData: DagLink<TreeNodeDatum>;
   orientation: Orientation;
   pathFunc: PathFunctionOption | PathFunction;
   pathClassFunc?: PathClassFunction;
@@ -122,7 +121,7 @@ export default class Link extends React.PureComponent<LinkProps, LinkState> {
 
   getClassNames() {
     const { linkData, orientation, pathClassFunc } = this.props;
-    const classNames = ['rd3t-link'];
+    const classNames = ['rd3dag-link'];
 
     if (typeof pathClassFunc === 'function') {
       classNames.push(pathClassFunc(linkData, orientation));
@@ -156,8 +155,8 @@ export default class Link extends React.PureComponent<LinkProps, LinkState> {
         onClick={this.handleOnClick}
         onMouseOver={this.handleOnMouseOver}
         onMouseOut={this.handleOnMouseOut}
-        data-source-id={linkData.source.id}
-        data-target-id={linkData.target.id}
+        data-source-id={linkData.source.data.__rd3dag.id}
+        data-target-id={linkData.target.data.__rd3dag.id}
       />
     );
   }

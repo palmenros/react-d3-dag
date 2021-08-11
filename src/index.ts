@@ -1,3 +1,3 @@
-import Tree from './Tree';
+import Dag from './Dag';
 
-export default Tree;
+export default Dag;
