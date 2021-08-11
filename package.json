@@ -1,6 +1,6 @@
 {
   "name": "react-d3-dag",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "React component to create interactive D3 directed acyclic graphs (DAGs)",
   "author": "Emily Klassen",
   "license": "MIT",
