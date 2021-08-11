@@ -12,14 +12,21 @@ import Link from '../Link';
 import { TreeNodeDatum, Point, RawNodeDatum } from '../types/common';
 import { TreeLinkEventCallback, TreeNodeEventCallback, TreeProps } from './types';
 import globalCss from '../globalCss';
-import {ChildrenDataOperator, ChildrenOperator, WrappedChildrenOperator} from 'd3-dag/dist/dag/create';
+import {
+  ChildrenDataOperator,
+  ChildrenOperator,
+  WrappedChildrenOperator,
+} from 'd3-dag/dist/dag/create';
 
 type GetSugiOpts<S> = S extends SugiyamaOperator<infer O> ? O : {};
 type SugiOperators = GetSugiOpts<SugiyamaOperator>;
-const hierarchy = dagHierarchy() as HierarchyOperator<any, any> as HierarchyOperator<TreeNodeDatum, {
-  children: ChildrenOperator<TreeNodeDatum>;
-  childrenData: ChildrenDataOperator<TreeNodeDatum>;
-} & SugiOperators>;
+const hierarchy = (dagHierarchy() as HierarchyOperator<any, any>) as HierarchyOperator<
+  TreeNodeDatum,
+  {
+    children: ChildrenOperator<TreeNodeDatum>;
+    childrenData: ChildrenDataOperator<TreeNodeDatum>;
+  } & SugiOperators
+>;
 
 type TreeState = {
   dataRef: TreeProps['data'];
@@ -299,12 +306,12 @@ class Dag extends React.Component<TreeProps, TreeState> {
   /**
    * Handles the user-defined `onNodeClick` function.
    */
-  handleOnNodeClickCb: TreeNodeEventCallback = (hierarchyPointNode, evt) => {
+  handleOnNodeClickCb: TreeNodeEventCallback = (dagNode, evt) => {
     const { onNodeClick } = this.props;
     if (onNodeClick && typeof onNodeClick === 'function') {
       // Persist the SyntheticEvent for downstream handling by users.
       evt.persist();
-      onNodeClick(clone(hierarchyPointNode), evt);
+      onNodeClick(clone(dagNode), evt);
     }
   };
 
@@ -323,12 +330,12 @@ class Dag extends React.Component<TreeProps, TreeState> {
   /**
    * Handles the user-defined `onNodeMouseOver` function.
    */
-  handleOnNodeMouseOverCb: TreeNodeEventCallback = (hierarchyPointNode, evt) => {
+  handleOnNodeMouseOverCb: TreeNodeEventCallback = (dagNode, evt) => {
     const { onNodeMouseOver } = this.props;
     if (onNodeMouseOver && typeof onNodeMouseOver === 'function') {
       // Persist the SyntheticEvent for downstream handling by users.
       evt.persist();
-      onNodeMouseOver(clone(hierarchyPointNode), evt);
+      onNodeMouseOver(clone(dagNode), evt);
     }
   };
 
@@ -347,12 +354,12 @@ class Dag extends React.Component<TreeProps, TreeState> {
   /**
    * Handles the user-defined `onNodeMouseOut` function.
    */
-  handleOnNodeMouseOutCb: TreeNodeEventCallback = (hierarchyPointNode, evt) => {
+  handleOnNodeMouseOutCb: TreeNodeEventCallback = (dagNode, evt) => {
     const { onNodeMouseOut } = this.props;
     if (onNodeMouseOut && typeof onNodeMouseOut === 'function') {
       // Persist the SyntheticEvent for downstream handling by users.
       evt.persist();
-      onNodeMouseOut(clone(hierarchyPointNode), evt);
+      onNodeMouseOut(clone(dagNode), evt);
     }
   };
 
@@ -377,13 +384,14 @@ class Dag extends React.Component<TreeProps, TreeState> {
   generateTree() {
     const { initialDepth, depthFactor, separation, nodeSize, orientation } = this.props;
     const { isInitialRenderForDataset } = this.state;
-    const layout = sugiyama()
-      .nodeSize(() => orientation === 'horizontal' ? [nodeSize.y, nodeSize.x] : [nodeSize.x, nodeSize.y])
-      // .separation((a, b) =>
-      //   a.parent.data.__rd3dag.id === b.parent.data.__rd3dag.id
-      //     ? separation.siblings
-      //     : separation.nonSiblings
-      // );
+    const layout = sugiyama().nodeSize(() =>
+      orientation === 'horizontal' ? [nodeSize.y, nodeSize.x] : [nodeSize.x, nodeSize.y]
+    );
+    // .separation((a, b) =>
+    //   a.parent.data.__rd3dag.id === b.parent.data.__rd3dag.id
+    //     ? separation.siblings
+    //     : separation.nonSiblings
+    // );
 
     const rootNode: D3Dag<TreeNodeDatum> = hierarchy(this.state.data[0]);
     layout(rootNode as any);
@@ -484,14 +492,14 @@ class Dag extends React.Component<TreeProps, TreeState> {
               );
             })}
 
-            {nodes.map((hierarchyPointNode, i) => {
-              const { data, x, y } = hierarchyPointNode;
+            {nodes.map((dagNode, i) => {
+              const { data, x, y } = dagNode;
               return (
                 <Node
                   key={'node-' + i}
                   data={data}
                   position={{ x, y }}
-                  dagNode={hierarchyPointNode}
+                  dagNode={dagNode}
                   nodeClassName={this.getNodeClassName(data)}
                   renderCustomNodeElement={renderCustomNodeElement}
                   nodeSize={nodeSize}
