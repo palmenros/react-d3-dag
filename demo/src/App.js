@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import clone from 'clone';
-// import Tree from 'react-d3-dag';
-// import { version } from 'react-d3-dag/package.json';
 import Dag from 'react-d3-dag';
+import { version } from 'react-d3-dag/package.json';
 import Switch from './components/Switch';
 import MixedNodeElement from './components/MixedNodeElement';
 import PureSvgNodeElement from './components/PureSvgNodeElement';
@@ -13,7 +12,6 @@ import orgChartJson from './examples/org-chart.json';
 import flareJson from './examples/d3-hierarchy-flare.json';
 import reactTree from './examples/reactRepoTree';
 
-const version = 'DAG'
 console.log('Demo React version: ', React.version);
 
 const customNodeFnMapping = {
