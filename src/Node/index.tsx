@@ -3,12 +3,9 @@ import { select } from 'd3-selection';
 
 import { Orientation, Point, TreeNodeDatum, RenderCustomNodeElementFn } from '../types/common';
 import DefaultNodeElement from './DefaultNodeElement';
-import {DagNode} from 'd3-dag';
+import { DagNode } from 'd3-dag';
 
-type NodeEventHandler = (
-  dagNode: DagNode<TreeNodeDatum>,
-  evt: SyntheticEvent
-) => void;
+type NodeEventHandler = (dagNode: DagNode<TreeNodeDatum>, evt: SyntheticEvent) => void;
 
 type NodeProps = {
   data: TreeNodeDatum;
@@ -39,11 +36,7 @@ export default class Node extends React.Component<NodeProps, NodeState> {
   private nodeRef: SVGGElement = null;
 
   state = {
-    transform: this.setTransform(
-      this.props.position,
-      this.props.orientation,
-      true
-    ),
+    transform: this.setTransform(this.props.position, this.props.orientation, true),
     initialStyle: {
       opacity: 0,
     },
@@ -110,17 +103,17 @@ export default class Node extends React.Component<NodeProps, NodeState> {
 
   // TODO: needs tests
   renderNodeElement = () => {
-    const { data, dagNode: hierarchyPointNode, renderCustomNodeElement } = this.props;
+    const { data, dagNode, renderCustomNodeElement } = this.props;
     if (typeof renderCustomNodeElement === 'function') {
       return renderCustomNodeElement({
-        dagNode: hierarchyPointNode,
+        dagNode,
         nodeDatum: data,
         toggleNode: this.handleNodeToggle,
       });
     }
 
     return DefaultNodeElement({
-      dagNode: hierarchyPointNode,
+      dagNode,
       nodeDatum: data,
       toggleNode: this.handleNodeToggle,
       onNodeClick: this.handleOnClick,
@@ -158,7 +151,9 @@ export default class Node extends React.Component<NodeProps, NodeState> {
           this.nodeRef = n;
         }}
         style={this.state.initialStyle}
-        className={[data.children ? 'rd3dag-node' : 'rd3dag-leaf-node', nodeClassName].join(' ').trim()}
+        className={[data.children ? 'rd3dag-node' : 'rd3dag-leaf-node', nodeClassName]
+          .join(' ')
+          .trim()}
         transform={this.state.transform}
       >
         {this.renderNodeElement()}
