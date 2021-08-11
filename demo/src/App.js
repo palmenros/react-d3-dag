@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import clone from 'clone';
-// import Tree from 'react-d3-tree';
-// import { version } from 'react-d3-tree/package.json';
+// import Tree from 'react-d3-dag';
+// import { version } from 'react-d3-dag/package.json';
 import Dag from 'react-d3-dag';
 import Switch from './components/Switch';
 import MixedNodeElement from './components/MixedNodeElement';
@@ -243,7 +243,7 @@ class App extends Component {
                 <h2 className="title">React D3 Tree</h2>
                 <h3 className="title">v{version}</h3>
                 <h3 className="title">
-                  <a href="/react-d3-tree/docs">
+                  <a href="/react-d3-dag/docs">
                     <span role="img" aria-label="open book emoji">
                       📖
                     </span>{' '}

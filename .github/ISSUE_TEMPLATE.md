@@ -1,4 +1,4 @@
-Thank you for taking the time to report an issue with react-d3-tree!  
+Thank you for taking the time to report an issue with react-d3-dag!  
 
 Feel free to delete any questions that do not apply.
 
@@ -14,8 +14,8 @@ Feel free to delete any questions that do not apply.
 ## Can you consistently reproduce the issue/create a reproduction case (e.g. on https://codesandbox.io)?
 [Replace with your answer if relevant]
 
-## What version of react-d3-tree are you using?
+## What version of react-d3-dag are you using?
 [Replace with your answer]
 
-## If react-d3-tree crashed with a traceback, please paste the full traceback below.
+## If react-d3-dag crashed with a traceback, please paste the full traceback below.
 [Replace with your traceback]

@@ -1,13 +1,16 @@
 {
-  "name": "react-d3-tree",
-  "version": "3.1.1",
-  "description": "React component to create interactive D3 tree hierarchies",
-  "author": "Ben Kremer",
+  "name": "react-d3-dag",
+  "version": "0.0.1",
+  "description": "React component to create interactive D3 directed acyclic graphs (DAGs)",
+  "author": "Emily Klassen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bkrem/react-d3-tree/issues"
+    "url": "https://github.com/forivall/react-d3-dag/issues"
   },
-  "homepage": "https://github.com/bkrem/react-d3-tree",
+  "contributors": [
+    "Ben Kremer"
+  ],
+  "homepage": "https://github.com/forivall/react-d3-dag",
   "files": [
     "lib"
   ],
@@ -29,13 +32,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bkrem/react-d3-tree.git"
+    "url": "https://github.com/forivall/react-d3-dag.git"
   },
   "keywords": [
     "react",
     "d3",
     "tree",
+    "dag",
     "component",
+    "directed-acyclic-graph",
+    "directed",
+    "acyclic",
     "graph",
     "svg",
     "hierarchical-data",

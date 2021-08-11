@@ -8,7 +8,7 @@ import autoExternal from 'rollup-plugin-auto-external';
 export default {
   input: 'src/index.js',
   output: {
-    file: 'lib/react-d3-tree.js',
+    file: 'lib/react-d3-dag.js',
     format: 'umd',
     name: 'ReactD3Tree',
     exports: 'named',
