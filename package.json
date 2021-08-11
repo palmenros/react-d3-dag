@@ -12,7 +12,9 @@
   ],
   "homepage": "https://github.com/forivall/react-d3-dag",
   "files": [
-    "lib"
+    "lib",
+    "src",
+    "tsconfig.json"
   ],
   "main": "lib/index.js",
   "scripts": {
