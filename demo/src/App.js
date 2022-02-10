@@ -5,6 +5,7 @@ import { version } from 'react-d3-dag/package.json';
 import Switch from './components/Switch';
 import MixedNodeElement from './components/MixedNodeElement';
 import PureSvgNodeElement from './components/PureSvgNodeElement';
+import MixedNodeInputElement from './components/MixedNodeInputElement';
 import './App.css';
 
 // Data examples
@@ -29,6 +30,21 @@ const customNodeFnMapping = {
     description: 'MixedNodeElement - SVG `circle` + `foreignObject` label',
     fn: ({ nodeDatum, toggleNode }, appState) => (
       <MixedNodeElement
+        nodeData={nodeDatum}
+        triggerNodeToggle={toggleNode}
+        foreignObjectProps={{
+          width: appState.nodeSize.x,
+          height: appState.nodeSize.y,
+          x: -50,
+          y: 50,
+        }}
+      />
+    ),
+  },
+  input: {
+    description: 'MixedNodeElement - Interactive nodes with inputs',
+    fn: ({ nodeDatum, toggleNode }, appState) => (
+      <MixedNodeInputElement
         nodeData={nodeDatum}
         triggerNodeToggle={toggleNode}
         foreignObjectProps={{

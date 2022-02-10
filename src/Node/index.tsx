@@ -104,22 +104,18 @@ export default class Node extends React.Component<NodeProps, NodeState> {
   // TODO: needs tests
   renderNodeElement = () => {
     const { data, dagNode, renderCustomNodeElement } = this.props;
-    if (typeof renderCustomNodeElement === 'function') {
-      return renderCustomNodeElement({
-        dagNode,
-        nodeDatum: data,
-        toggleNode: this.handleNodeToggle,
-      });
-    }
-
-    return DefaultNodeElement({
+    const renderNode =
+      typeof renderCustomNodeElement === 'function' ? renderCustomNodeElement : DefaultNodeElement;
+    const nodeProps = {
       dagNode,
       nodeDatum: data,
       toggleNode: this.handleNodeToggle,
       onNodeClick: this.handleOnClick,
       onNodeMouseOver: this.handleOnMouseOver,
       onNodeMouseOut: this.handleOnMouseOut,
-    });
+    };
+
+    return renderNode(nodeProps);
   };
 
   handleNodeToggle = () => this.props.onNodeToggle(this.props.data.__rd3dag.id);

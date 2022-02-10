@@ -49,6 +49,18 @@ export interface CustomNodeElementProps {
    * label is clicked instead of the node itself.
    */
   toggleNode: () => void;
+  /**
+   * The `onNodeClick` handler defined for `Tree` (if any).
+   */
+  onNodeClick: SyntheticEventHandler;
+  /**
+   * The `onNodeMouseOver` handler defined for `Tree` (if any).
+   */
+  onNodeMouseOver: SyntheticEventHandler;
+  /**
+   * The `onNodeMouseOut` handler defined for `Tree` (if any).
+   */
+  onNodeMouseOut: SyntheticEventHandler;
 }
 
 export type RenderCustomNodeElementFn = (rd3dagNodeProps: CustomNodeElementProps) => JSX.Element;
