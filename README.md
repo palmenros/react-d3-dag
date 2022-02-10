@@ -1,4 +1,4 @@
-<h1 align="center">React D3 Tree</h1>
+<h1 align="center">React D3 DAG</h1>
 
 <p align="center">
   <a href="#buildstatus">
@@ -29,9 +29,12 @@
   <h3 align="center"><a href="https://forivall.github.io/react-d3-dag/docs">📖 API Documentation (v3)</a></h3>
 </p>
 
-React D3 Tree is a [React](http://facebook.github.io/react/) component that
-lets you represent hierarchical data (e.g. family trees, org charts, file
-directories) as an interactive tree graph with minimal setup, by leveraging
+NOTE: this is a friendly fork of [react-d3-tree], and will pull upstream when possible.
+As such, you may see some references to "tree" in the documentation.
+
+React D3 DAG is a [React](http://facebook.github.io/react/) component that
+lets you represent directed acyclical data (e.g. dependency graphs, git history)
+as an interactive graph with minimal setup, by leveraging
 the [D3](https://d3js.org/)-[`dag`](https://github.com/erikbrinkman/d3-dag)
 layout.
 
@@ -317,5 +320,7 @@ npm start
 
 ## Contributors
 A huge thank you [Ben Kremer](https://github.com/bkrem), author of
-react-d3-tree, which I forked to create this. And thank you to all of the
+[react-d3-tree], which I forked to create this. And thank you to all of the
 [contributors](https://github.com/bkrem/react-d3-tree/graphs/contributors) to his project!
+
+[react-d3-tree]: https://github.com/bkrem/react-d3-tree
