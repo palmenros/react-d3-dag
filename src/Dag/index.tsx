@@ -1,32 +1,33 @@
-import React, { SyntheticEvent } from 'react';
-import { sugiyama, dagHierarchy, HierarchyOperator, Dag as D3Dag, SugiyamaOperator } from 'd3-dag';
-import { select, event } from 'd3-selection';
+import React from 'react';
+import {
+  sugiyama,
+  graphHierarchy as dagHierarchy,
+  Hierarchy as HierarchyOperator,
+  Graph as D3Dag,
+  Sugiyama as SugiyamaOperator,
+} from 'd3-dag';
+import {
+  GraphLink as DagLink,
+  GraphNode as DagNode,
+  Children as DagChildren,
+  ChildrenData as DagChildrenData,
+} from 'd3-dag';
+import { select } from 'd3-selection';
 import { zoom as d3zoom, zoomIdentity } from 'd3-zoom';
 import { dequal as deepEqual } from 'dequal/lite';
 import clone from 'clone';
 import { v4 as uuidv4 } from 'uuid';
 
-import TransitionGroupWrapper from './TransitionGroupWrapper';
-import Node from '../Node';
-import Link from '../Link';
-import { TreeNodeDatum, Point, RawNodeDatum } from '../types/common';
-import { TreeLinkEventCallback, TreeNodeEventCallback, TreeProps } from './types';
-import globalCss from '../globalCss';
-import {
-  ChildrenDataOperator,
-  ChildrenOperator,
-  WrappedChildrenOperator,
-} from 'd3-dag/dist/dag/create';
+import TransitionGroupWrapper from './TransitionGroupWrapper.js';
+import Node from '../Node/index.js';
+import Link from '../Link/index.js';
+import { TreeNodeDatum, Point, RawNodeDatum, DagHierarchy } from '../types/common.js';
+import { TreeLinkEventCallback, TreeNodeEventCallback, TreeProps } from './types.js';
+import globalCss from '../globalCss.js';
 
 type GetSugiOpts<S> = S extends SugiyamaOperator<infer O> ? O : {};
 type SugiOperators = GetSugiOpts<SugiyamaOperator>;
-const hierarchy = (dagHierarchy() as HierarchyOperator<any, any>) as HierarchyOperator<
-  TreeNodeDatum,
-  {
-    children: ChildrenOperator<TreeNodeDatum>;
-    childrenData: ChildrenDataOperator<TreeNodeDatum>;
-  } & SugiOperators
->;
+const hierarchy = dagHierarchy() as DagHierarchy<any> as DagHierarchy<TreeNodeDatum>;
 
 type TreeState = {
   dataRef: TreeProps['data'];
@@ -34,6 +35,7 @@ type TreeState = {
   d3: { translate: Point; scale: number };
   isTransitioning: boolean;
   isInitialRenderForDataset: boolean;
+  dataKey: string;
 };
 
 class Dag extends React.Component<TreeProps, TreeState> {
@@ -54,6 +56,7 @@ class Dag extends React.Component<TreeProps, TreeState> {
     collapsible: true,
     initialDepth: undefined,
     zoomable: true,
+    draggable: true,
     zoom: 1,
     scaleExtent: { min: 0.1, max: 1 },
     nodeSize: { x: 140, y: 140 },
@@ -66,6 +69,9 @@ class Dag extends React.Component<TreeProps, TreeState> {
     renderCustomNodeElement: undefined,
     enableLegacyTransitions: false,
     hasInteractiveNodes: false,
+    dimensions: undefined,
+    centeringTransitionDuration: 800,
+    dataKey: undefined,
   };
 
   state: TreeState = {
@@ -74,6 +80,7 @@ class Dag extends React.Component<TreeProps, TreeState> {
     d3: Dag.calculateD3Geometry(this.props),
     isTransitioning: false,
     isInitialRenderForDataset: true,
+    dataKey: this.props.dataKey,
   };
 
   private internalState = {
@@ -87,11 +94,14 @@ class Dag extends React.Component<TreeProps, TreeState> {
   static getDerivedStateFromProps(nextProps: TreeProps, prevState: TreeState) {
     let derivedState: Partial<TreeState> = null;
     // Clone new data & assign internal properties if `data` object reference changed.
-    if (nextProps.data !== prevState.dataRef) {
+    // If the dataKey was present but didn't change, then we don't need to re-render the tree
+    const dataKeyChanged = !nextProps.dataKey || prevState.dataKey !== nextProps.dataKey;
+    if (nextProps.data !== prevState.dataRef && dataKeyChanged) {
       derivedState = {
         dataRef: nextProps.data,
         data: Dag.assignInternalProperties(clone(nextProps.data)),
         isInitialRenderForDataset: true,
+        dataKey: nextProps.dataKey,
       };
     }
     const d3 = Dag.calculateD3Geometry(nextProps);
@@ -117,6 +127,7 @@ class Dag extends React.Component<TreeProps, TreeState> {
       !deepEqual(this.props.translate, prevProps.translate) ||
       !deepEqual(this.props.scaleExtent, prevProps.scaleExtent) ||
       this.props.zoomable !== prevProps.zoomable ||
+      this.props.draggable !== prevProps.draggable ||
       this.props.zoom !== prevProps.zoom ||
       this.props.enableLegacyTransitions !== prevProps.enableLegacyTransitions
     ) {
@@ -153,16 +164,24 @@ class Dag extends React.Component<TreeProps, TreeState> {
       d3zoom()
         .scaleExtent(zoomable ? [scaleExtent.min, scaleExtent.max] : [zoom, zoom])
         // TODO: break this out into a separate zoom handler fn, rather than inlining it.
-        .filter(() => {
-          if (hasInteractiveNodes)
+        .filter((event: any) => {
+          if (hasInteractiveNodes) {
             return (
               event.target.classList.contains(this.svgInstanceRef) ||
               event.target.classList.contains(this.gInstanceRef) ||
               event.shiftKey
             );
+          }
           return true;
         })
-        .on('zoom', () => {
+        .on('zoom', (event: any) => {
+          if (
+            !this.props.draggable &&
+            ['mousemove', 'touchmove', 'dblclick'].includes(event.sourceEvent.type)
+          ) {
+            return;
+          }
+
           g.attr('transform', event.transform);
           if (typeof onUpdate === 'function') {
             // This callback is magically called not only on "zoom", but on "drag", as well,
@@ -313,6 +332,23 @@ class Dag extends React.Component<TreeProps, TreeState> {
     }
   };
 
+  handleAddChildrenToNode = (nodeId: string, childrenData: RawNodeDatum[]) => {
+    const data = clone(this.state.data);
+    const matches = this.findNodesById(nodeId, data, []);
+
+    if (matches.length > 0) {
+      const targetNodeDatum = matches[0];
+
+      const depth = targetNodeDatum.__rd3dag.depth;
+      const formattedChildren = clone(childrenData).map((node: RawNodeDatum) =>
+        Dag.assignInternalProperties([node], depth + 1)
+      );
+      targetNodeDatum.children.push(...formattedChildren.flat());
+
+      this.setState({ data });
+    }
+  };
+
   /**
    * Handles the user-defined `onNodeClick` function.
    */
@@ -386,6 +422,42 @@ class Dag extends React.Component<TreeProps, TreeState> {
   };
 
   /**
+   * Takes a hierarchy point node and centers the node on the screen
+   * if the dimensions parameter is passed to `Tree`.
+   *
+   * This code is adapted from Rob Schmuecker's centerNode method.
+   * Link: http://bl.ocks.org/robschmuecker/7880033
+   */
+  centerNode = (graphNode: DagNode<TreeNodeDatum>) => {
+    const { dimensions, orientation, zoom, centeringTransitionDuration } = this.props;
+    if (dimensions) {
+      const g = select(`.${this.gInstanceRef}`);
+      const svg = select(`.${this.svgInstanceRef}`);
+      const scale = this.state.d3.scale;
+
+      let x: number;
+      let y: number;
+      // if the orientation is horizontal, calculate the variables inverted (x->y, y->x)
+      if (orientation === 'horizontal') {
+        y = -graphNode.x * scale + dimensions.height / 2;
+        x = -graphNode.y * scale + dimensions.width / 2;
+      } else {
+        // else, calculate the variables normally (x->x, y->y)
+        x = -graphNode.x * scale + dimensions.width / 2;
+        y = -graphNode.y * scale + dimensions.height / 2;
+      }
+      //@ts-ignore
+      g.transition()
+        .duration(centeringTransitionDuration)
+        .attr('transform', 'translate(' + x + ',' + y + ')scale(' + scale + ')');
+      // Sets the viewport to the new center so that it does not jump back to original
+      // coordinates when dragged/zoomed
+      //@ts-ignore
+      svg.call(d3zoom().transform, zoomIdentity.translate(x, y).scale(zoom));
+    }
+  };
+
+  /**
    * Generates tree elements (`nodes` and `links`) by
    * grabbing the rootNode from `this.state.data[0]`.
    * Restricts tree depth to `props.initialDepth` if defined and if this is
@@ -403,12 +475,12 @@ class Dag extends React.Component<TreeProps, TreeState> {
     //     : separation.nonSiblings
     // );
 
-    const rootNode: D3Dag<TreeNodeDatum> = hierarchy(this.state.data[0]);
-    layout(rootNode as any);
-    let nodes = rootNode.descendants();
-    const links = rootNode.links();
+    const dag = hierarchy(this.state.data[0]);
+    layout(dag);
+    const nodes = [...dag.nodes()];
+    const links = [...dag.links()];
 
-    return { rootNode, nodes, links };
+    return { dag, nodes, links };
   }
 
   /**
@@ -454,7 +526,6 @@ class Dag extends React.Component<TreeProps, TreeState> {
       orientation,
       pathFunc,
       transitionDuration,
-      zoomable,
       nodeSize,
       depthFactor,
       initialDepth,
@@ -503,7 +574,7 @@ class Dag extends React.Component<TreeProps, TreeState> {
             })}
 
             {nodes.map((dagNode, i) => {
-              const { data, x, y } = dagNode;
+              const { data, ux: x, uy: y } = dagNode;
               return (
                 <Node
                   key={'node-' + i}
@@ -520,7 +591,9 @@ class Dag extends React.Component<TreeProps, TreeState> {
                   onNodeClick={this.handleOnNodeClickCb}
                   onNodeMouseOver={this.handleOnNodeMouseOverCb}
                   onNodeMouseOut={this.handleOnNodeMouseOutCb}
+                  handleAddChildrenToNode={this.handleAddChildrenToNode}
                   subscriptions={subscriptions}
+                  centerNode={this.centerNode}
                 />
               );
             })}

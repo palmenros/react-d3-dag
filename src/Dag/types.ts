@@ -1,4 +1,4 @@
-import { DagNode } from 'd3-dag';
+import { GraphNode as DagNode } from 'd3-dag';
 import { SyntheticEvent } from 'react';
 import {
   Orientation,
@@ -9,7 +9,7 @@ import {
   RawNodeDatum,
   RenderCustomNodeElementFn,
   TreeNodeDatum,
-} from '../types/common';
+} from '../types/common.js';
 
 export type TreeNodeEventCallback = (node: DagNode<TreeNodeDatum>, event: SyntheticEvent) => any;
 
@@ -120,6 +120,24 @@ export interface TreeProps {
   translate?: Point;
 
   /**
+   * Enables the centering of nodes on click by providing the dimensions of the tree container,
+   * e.g. via {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect | `getBoundingClientRect()`}.
+   *
+   * If dimensions are given: node will center on click. If not, node will not center on click.
+   */
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+
+  /**
+   * Sets the time (in milliseconds) for the transition to center a node once clicked.
+   *
+   * {@link Tree.defaultProps.centeringTransitionDuration | Default value}
+   */
+  centeringTransitionDuration?: number;
+
+  /**
    * The draw function (or `d`) used to render `path`/`link` elements. Accepts a predefined
    * `PathFunctionOption` or a user-defined `PathFunction`.
    *
@@ -178,6 +196,13 @@ export interface TreeProps {
    * {@link Tree.defaultProps.zoomable | Default value}
    */
   zoomable?: boolean;
+
+  /**
+   * Toggles ability to drag the Tree.
+   *
+   * {@link Tree.defaultProps.draggable | Default value}
+   */
+  draggable?: boolean;
 
   /**
    * A floating point number to set the initial zoom level. It is constrained by `scaleExtent`.
@@ -282,4 +307,13 @@ export interface TreeProps {
    * {@link Tree.defaultProps.hasInteractiveNodes | Default value}
    */
   hasInteractiveNodes?: boolean;
+
+  /**
+   * Indicates the tree being represented by the data. If the dataKey changes, then we should re-render the tree.
+   * If the data changes but the dataKey keeps being the same, then it's a change (like adding children to a node) for the same tree,
+   * so we shouldn't re-render the tree.
+   *
+   * {@link Tree.defaultProps.dataKey | Default value}
+   */
+  dataKey?: string;
 }

@@ -1,6 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import { linkHorizontal, linkVertical } from 'd3-shape';
-import { DagLink, DagNode } from 'd3-dag';
+import { GraphLink as DagLink, GraphNode as DagNode } from 'd3-dag';
 import { select } from 'd3-selection';
 import {
   Orientation,
@@ -8,7 +8,7 @@ import {
   PathFunction,
   TreeNodeDatum,
   PathClassFunction,
-} from '../types/common';
+} from '../types/common.js';
 
 type LinkEventHandler = (
   source: DagNode<TreeNodeDatum>,

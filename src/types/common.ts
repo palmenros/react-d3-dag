@@ -1,5 +1,11 @@
 import { SyntheticEvent } from 'react';
-import { DagLink, DagNode } from 'd3-dag';
+import {
+  GraphLink as DagLink,
+  GraphNode as DagNode,
+  Hierarchy,
+  Children as DagChildren,
+  WrappedChildren as DagWrappedChildren,
+} from 'd3-dag';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -23,11 +29,19 @@ export interface TreeNodeDatum extends RawNodeDatum {
   };
 }
 
+export type DagHierarchy<NodeDatum, LinkDatum = undefined> = Hierarchy<
+  NodeDatum,
+  LinkDatum,
+  DagChildren<NodeDatum>,
+  DagWrappedChildren<NodeDatum, DagChildren<NodeDatum>>
+>;
+
 export type PathFunctionOption = 'diagonal' | 'elbow' | 'straight' | 'step';
 export type PathFunction = (link: DagLink<TreeNodeDatum>, orientation: Orientation) => string;
 export type PathClassFunction = PathFunction;
 
 export type SyntheticEventHandler = (evt: SyntheticEvent) => void;
+export type AddChildrenFunction = (children: RawNodeDatum[]) => void;
 
 /**
  * The properties that are passed to the user-defined `renderCustomNodeElement` render function.
@@ -61,6 +75,10 @@ export interface CustomNodeElementProps {
    * The `onNodeMouseOut` handler defined for `Tree` (if any).
    */
   onNodeMouseOut: SyntheticEventHandler;
+  /**
+   * The `Node` class's internal `addChildren` handler.
+   */
+  addChildren: AddChildrenFunction;
 }
 
 export type RenderCustomNodeElementFn = (rd3dagNodeProps: CustomNodeElementProps) => JSX.Element;

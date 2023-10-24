@@ -117,9 +117,9 @@ export default function OrgChartTree() {
 ```
 
 ## Props
-For details on all props accepted by  `Tree`, check out the [TreeProps reference docs](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html).
+For details on all props accepted by  `Tree`, check out the [TreeProps reference docs](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html).
 
-The only required prop is [data](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#data), all other props on `Tree` are optional/pre-defined (see "Default value" on each prop definition).
+The only required prop is [data](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#data), all other props on `Tree` are optional/pre-defined (see "Default value" on each prop definition).
 
 ## Working with the default Tree
 `react-d3-dag` provides default implementations for `Tree`'s nodes & links, which are intended to get you up & running with a working tree quickly. 
@@ -129,7 +129,7 @@ This section is focused on explaining **how to provide data, styles and event ha
 > Need more fine-grained control over how nodes & links appear/behave? Check out the [Customizing the Tree](#customizing-the-tree) section below.
 
 ### Providing `data`
-By default, `Tree` expects each node object in `data` to implement the [`RawNodeDatum` interface](https://forivall.github.io/react-d3-dag/docs/interfaces/_types_common_.rawnodedatum.html):
+By default, `Tree` expects each node object in `data` to implement the [`RawNodeDatum` interface](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_types_common_.rawnodedatum.html):
 
 ```ts
 interface RawNodeDatum {
@@ -166,7 +166,7 @@ To visually distinguish these three types of nodes from each other by color, we 
 }
 
 .node__leaf > circle {
-  fill: green
+  fill: green;
   /* Let's also make the radius of leaf nodes larger */
   r: 40;
 }
@@ -193,7 +193,7 @@ export default function StyledNodesTree() {
 }
 ```
 
- > For more details on the `className` props for nodes, see the [TreeProps reference docs](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html).
+ > For more details on the `className` props for nodes, see the [TreeProps reference docs](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html).
 
 ### Styling Links
 `Tree` provides the `pathClassFunc` property to pass additional classNames to every link to be rendered.
@@ -226,26 +226,26 @@ function StyledLinksTree() {
 }
 ```
 
-> For more details, see the `PathClassFunction` [reference docs](https://forivall.github.io/react-d3-dag/docs/modules/_types_common_.html#pathclassfunction).
+> For more details, see the `PathClassFunction` [reference docs](https://forivall.github.io/react-d3-tree/docs/modules/_src_types_common_.html#pathclassfunction).
 
 ### Event Handlers
 `Tree` exposes the following event handler callbacks by default:
 
-- [onLinkClick](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onlinkclick)
-- [onLinkMouseOut](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onlinkmouseout)
-- [onLinkMouseOver](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onlinkmouseover)
-- [onNodeClick](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onnodeclick)
-- [onNodeMouseOut](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onnodemouseout)
-- [onNodeMouseOver](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#onnodemouseover)
+- [onLinkClick](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#onlinkclick)
+- [onLinkMouseOut](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#onlinkmouseout)
+- [onLinkMouseOver](https://forivall.github.io/react-d3-tree/docs/interfaces/_src__tree_types_.treeprops.html#onlinkmouseover)
+- [onNodeClick](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#onnodeclick)
+- [onNodeMouseOut](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#onnodemouseout)
+- [onNodeMouseOver](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#onnodemouseover)
 
-> **Note:** Nodes are expanded/collapsed whenever `onNodeClick` fires. To prevent this, set the [`collapsible` prop](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#collapsible) to `false`.  
+> **Note:** Nodes are expanded/collapsed whenever `onNodeClick` fires. To prevent this, set the [`collapsible` prop](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#collapsible) to `false`.  
 > `onNodeClick` will still fire, but it will not change the target node's expanded/collapsed state.
 
 ## Customizing the Tree
 <!-- Using the `<nodeType>NodeClassName` and `pathClassFunc` approaches above should give  -->
 
 ### `renderCustomNodeElement`
-The [`renderCustomNodeElement` prop](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#rendercustomnodeelement) accepts a **custom render function that will be used for every node in the tree.**
+The [`renderCustomNodeElement` prop](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#rendercustomnodeelement) accepts a **custom render function that will be used for every node in the tree.**
 
 Cases where you may find rendering your own `Node` element useful include:
 
@@ -254,11 +254,11 @@ Cases where you may find rendering your own `Node` element useful include:
 - Building **richer & more complex nodes/labels** by leveraging the `foreignObject` tag to render HTML inside the SVG namespace - [Example (codesandbox.io)](https://codesandbox.io/s/rd3t-v2-custom-with-foreignobject-0mfj8?file=/src/App.js)
 
 ### `pathFunc`
-The [`pathFunc` prop](https://forivall.github.io/react-d3-dag/docs/interfaces/_tree_types_.treeprops.html#pathfunc) accepts a predefined `PathFunctionOption` enum or a user-defined `PathFunction`.
+The [`pathFunc` prop](https://forivall.github.io/react-d3-tree/docs/interfaces/_src_tree_types_.treeprops.html#pathfunc) accepts a predefined `PathFunctionOption` enum or a user-defined `PathFunction`.
 
 By changing or providing your own `pathFunc`, you are able to change how links between nodes of the tree (which are SVG `path` tags under the hood) are drawn.
 
-The currently [available enums](https://forivall.github.io/react-d3-dag/docs/modules/_types_common_.html#pathfunctionoption) are:
+The currently [available enums](https://forivall.github.io/react-d3-tree/docs/modules/_src_types_common_.html#pathfunctionoption) are:
 - `diagonal` (default)
 - `elbow`
 - `straight`

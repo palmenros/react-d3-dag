@@ -127,7 +127,7 @@ describe('<Dag />', () => {
       const nodeCount = renderedComponent.find(Node).length;
       renderedComponent
         .find(Node)
-        .first()
+        .filterWhere(wrapper => wrapper.props().data.name === mockData4[0].name)
         .find('circle')
         .simulate('click'); // collapse
 
@@ -139,15 +139,11 @@ describe('<Dag />', () => {
       const nodeCount = renderedComponent.find(Node).length;
       renderedComponent
         .find(Node)
-        .first()
+        .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
         .find('circle')
         .simulate('click'); // collapse
 
-      renderedComponent
-        .find(Node)
-        .first()
-        .find('circle')
-        .simulate('click'); // re-expand
+      renderedComponent.find(Node).first().find('circle').simulate('click'); // re-expand
 
       expect(Dag.collapseNode).toHaveBeenCalledTimes(nodeCount);
       expect(Dag.expandNode).toHaveBeenCalledTimes(1);
@@ -157,7 +153,7 @@ describe('<Dag />', () => {
       const renderedComponent = mount(<Dag data={mockData} collapsible={false} />);
       renderedComponent
         .find(Node)
-        .first()
+        .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
         .find('circle')
         .simulate('click');
 
@@ -170,13 +166,13 @@ describe('<Dag />', () => {
         const nodeCount = renderedComponent.find(Node).length;
         renderedComponent
           .find(Node)
-          .first()
+          .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
           .find('circle')
           .simulate('click');
 
         renderedComponent
           .find(Node)
-          .first()
+          .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
           .find('circle')
           .simulate('click');
 
@@ -190,7 +186,7 @@ describe('<Dag />', () => {
         const nodeCount = renderedComponent.find(Node).length;
         renderedComponent
           .find(Node)
-          .first()
+          .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
           .find('circle')
           .simulate('click');
 
@@ -198,7 +194,7 @@ describe('<Dag />', () => {
 
         renderedComponent
           .find(Node)
-          .first()
+          .filterWhere(wrapper => wrapper.props().data.name === mockData[0].name)
           .find('circle')
           .simulate('click');
 
@@ -211,32 +207,18 @@ describe('<Dag />', () => {
   describe('shouldCollapseNeighborNodes', () => {
     it('is inactive by default', () => {
       const renderedComponent = mount(<Dag data={mockData} />);
-      renderedComponent
-        .find(Node)
-        .first()
-        .simulate('click'); // collapse
+      renderedComponent.find(Node).first().simulate('click'); // collapse
 
-      renderedComponent
-        .find(Node)
-        .first()
-        .simulate('click'); // re-expand
+      renderedComponent.find(Node).first().simulate('click'); // re-expand
 
       expect(Dag.prototype.collapseNeighborNodes).toHaveBeenCalledTimes(0);
     });
 
     it('collapses all neighbor nodes of the targetNode if it is about to be expanded', () => {
       const renderedComponent = mount(<Dag data={mockData} shouldCollapseNeighborNodes />);
-      renderedComponent
-        .find(Node)
-        .first()
-        .find('circle')
-        .simulate('click'); // collapse
+      renderedComponent.find(Node).first().find('circle').simulate('click'); // collapse
 
-      renderedComponent
-        .find(Node)
-        .first()
-        .find('circle')
-        .simulate('click'); // re-expand
+      renderedComponent.find(Node).first().find('circle').simulate('click'); // re-expand
 
       expect(Dag.prototype.collapseNeighborNodes).toHaveBeenCalledTimes(1);
     });
@@ -261,11 +243,7 @@ describe('<Dag />', () => {
     it.skip('increases dag depth by no more than 1 level when a node is expanded after initialising to `initialDepth`', () => {
       const renderedComponent = mount(<Dag data={mockTree_D1N2_D2N2} initialDepth={0} />);
       expect(renderedComponent.find(Node).length).toBe(1);
-      renderedComponent
-        .find(Node)
-        .first()
-        .find('circle')
-        .simulate('click');
+      renderedComponent.find(Node).first().find('circle').simulate('click');
       expect(renderedComponent.find(Node).length).toBe(3);
     });
   });
@@ -327,11 +305,7 @@ describe('<Dag />', () => {
         const onClickSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onNodeClick={onClickSpy} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('click');
+        renderedComponent.find(Node).first().find('circle').simulate('click');
 
         expect(onClickSpy).toHaveBeenCalledTimes(1);
       });
@@ -342,11 +316,7 @@ describe('<Dag />', () => {
           <Dag data={mockData} collapsible={false} onNodeClick={onClickSpy} />
         );
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('click');
+        renderedComponent.find(Node).first().find('circle').simulate('click');
 
         expect(onClickSpy).toHaveBeenCalledTimes(1);
       });
@@ -361,17 +331,10 @@ describe('<Dag />', () => {
           <Dag data={mockData} onNodeClick={onClickSpy} collapsible={false} />
         );
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('click', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('click', mockEvt);
 
         expect(onClickSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Node)
-            .first()
-            .prop('dagNode'),
+          renderedComponent.find(Node).first().prop('dagNode'),
           expect.objectContaining(mockEvt)
         );
       });
@@ -381,11 +344,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData} onNodeClick={() => {}} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('click', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('click', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -396,11 +355,7 @@ describe('<Dag />', () => {
         const onMouseOverSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOver={onMouseOverSpy} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseover');
+        renderedComponent.find(Node).first().find('circle').simulate('mouseover');
 
         expect(onMouseOverSpy).toHaveBeenCalledTimes(1);
       });
@@ -409,11 +364,7 @@ describe('<Dag />', () => {
         const onMouseOverSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOver />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseover');
+        renderedComponent.find(Node).first().find('circle').simulate('mouseover');
 
         expect(onMouseOverSpy).toHaveBeenCalledTimes(0);
       });
@@ -423,17 +374,10 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event' };
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOver={onMouseOverSpy} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseover', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('mouseover', mockEvt);
 
         expect(onMouseOverSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Node)
-            .first()
-            .prop('dagNode'),
+          renderedComponent.find(Node).first().prop('dagNode'),
           expect.objectContaining(mockEvt)
         );
       });
@@ -443,11 +387,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOver={() => {}} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseover', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('mouseover', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -458,11 +398,7 @@ describe('<Dag />', () => {
         const onMouseOutSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOut={onMouseOutSpy} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseout');
+        renderedComponent.find(Node).first().find('circle').simulate('mouseout');
 
         expect(onMouseOutSpy).toHaveBeenCalledTimes(1);
       });
@@ -471,11 +407,7 @@ describe('<Dag />', () => {
         const onMouseOutSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOut />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseout');
+        renderedComponent.find(Node).first().find('circle').simulate('mouseout');
 
         expect(onMouseOutSpy).toHaveBeenCalledTimes(0);
       });
@@ -485,17 +417,10 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event' };
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOut={onMouseOutSpy} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseout', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('mouseout', mockEvt);
 
         expect(onMouseOutSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Node)
-            .first()
-            .prop('dagNode'),
+          renderedComponent.find(Node).first().prop('dagNode'),
           expect.objectContaining(mockEvt)
         );
       });
@@ -505,11 +430,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData} onNodeMouseOut={() => {}} />);
 
-        renderedComponent
-          .find(Node)
-          .first()
-          .find('circle')
-          .simulate('mouseout', mockEvt);
+        renderedComponent.find(Node).first().find('circle').simulate('mouseout', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -520,10 +441,7 @@ describe('<Dag />', () => {
         const onLinkClickSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData2} onLinkClick={onLinkClickSpy} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('click');
+        renderedComponent.find(Link).first().simulate('click');
 
         expect(onLinkClickSpy).toHaveBeenCalledTimes(1);
       });
@@ -532,10 +450,7 @@ describe('<Dag />', () => {
         const onClickSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onLinkClick />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('click');
+        renderedComponent.find(Link).first().simulate('click');
 
         expect(onClickSpy).toHaveBeenCalledTimes(0);
       });
@@ -546,10 +461,7 @@ describe('<Dag />', () => {
           <Dag data={mockData} collapsible={false} onLinkClick={onLinkClickSpy} />
         );
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('click');
+        renderedComponent.find(Link).first().simulate('click');
 
         expect(onLinkClickSpy).toHaveBeenCalledTimes(1);
       });
@@ -559,20 +471,11 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event' };
         const renderedComponent = mount(<Dag data={mockData2} onLinkClick={onLinkClickSpy} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('click', mockEvt);
+        renderedComponent.find(Link).first().simulate('click', mockEvt);
 
         expect(onLinkClickSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').source,
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').target,
+          renderedComponent.find(Link).first().prop('linkData').source,
+          renderedComponent.find(Link).first().prop('linkData').target,
           expect.objectContaining(mockEvt)
         );
       });
@@ -582,10 +485,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData2} onLinkClick={() => {}} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('click', mockEvt);
+        renderedComponent.find(Link).first().simulate('click', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -598,10 +498,7 @@ describe('<Dag />', () => {
           <Dag data={mockData} onLinkMouseOver={onLinkMouseOverOverSpy} />
         );
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseover');
+        renderedComponent.find(Link).first().simulate('mouseover');
 
         expect(onLinkMouseOverOverSpy).toHaveBeenCalledTimes(1);
       });
@@ -610,10 +507,7 @@ describe('<Dag />', () => {
         const onLinkMouseOverSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOver />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseover');
+        renderedComponent.find(Link).first().simulate('mouseover');
 
         expect(onLinkMouseOverSpy).toHaveBeenCalledTimes(0);
       });
@@ -625,20 +519,11 @@ describe('<Dag />', () => {
           <Dag data={mockData} onLinkMouseOver={onLinkMouseOverOverSpy} />
         );
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseover', mockEvt);
+        renderedComponent.find(Link).first().simulate('mouseover', mockEvt);
 
         expect(onLinkMouseOverOverSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').source,
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').target,
+          renderedComponent.find(Link).first().prop('linkData').source,
+          renderedComponent.find(Link).first().prop('linkData').target,
           expect.objectContaining(mockEvt)
         );
       });
@@ -648,10 +533,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOver={() => {}} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseover', mockEvt);
+        renderedComponent.find(Link).first().simulate('mouseover', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -662,10 +544,7 @@ describe('<Dag />', () => {
         const onLinkMouseOutSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOut={onLinkMouseOutSpy} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseout');
+        renderedComponent.find(Link).first().simulate('mouseout');
 
         expect(onLinkMouseOutSpy).toHaveBeenCalledTimes(1);
       });
@@ -674,10 +553,7 @@ describe('<Dag />', () => {
         const onLinkMouseOutSpy = jest.fn();
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOut />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseout');
+        renderedComponent.find(Link).first().simulate('mouseout');
 
         expect(onLinkMouseOutSpy).toHaveBeenCalledTimes(0);
       });
@@ -687,20 +563,11 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event' };
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOut={onLinkMouseOutSpy} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseout', mockEvt);
+        renderedComponent.find(Link).first().simulate('mouseout', mockEvt);
 
         expect(onLinkMouseOutSpy).toHaveBeenCalledWith(
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').source,
-          renderedComponent
-            .find(Link)
-            .first()
-            .prop('linkData').target,
+          renderedComponent.find(Link).first().prop('linkData').source,
+          renderedComponent.find(Link).first().prop('linkData').target,
           expect.objectContaining(mockEvt)
         );
       });
@@ -710,10 +577,7 @@ describe('<Dag />', () => {
         const mockEvt = { mock: 'event', persist: persistSpy };
         const renderedComponent = mount(<Dag data={mockData} onLinkMouseOut={() => {}} />);
 
-        renderedComponent
-          .find(Link)
-          .first()
-          .simulate('mouseout', mockEvt);
+        renderedComponent.find(Link).first().simulate('mouseout', mockEvt);
 
         expect(persistSpy).toHaveBeenCalledTimes(1);
       });
@@ -724,10 +588,7 @@ describe('<Dag />', () => {
         const onUpdateSpy = jest.fn();
 
         const renderedComponent = mount(<Dag data={mockData} onUpdate={onUpdateSpy} />);
-        renderedComponent
-          .find(Node)
-          .first()
-          .simulate('click'); // collapse
+        renderedComponent.find(Node).first().simulate('click'); // collapse
 
         expect(onUpdateSpy).toHaveBeenCalledWith({
           node: expect.any(Object),
@@ -781,10 +642,7 @@ describe('<Dag />', () => {
         const renderedComponent = mount(
           <Dag data={mockData} zoom={zoom} translate={translate} onUpdate={onUpdateSpy} />
         );
-        renderedComponent
-          .find(Node)
-          .first()
-          .simulate('click');
+        renderedComponent.find(Node).first().simulate('click');
 
         expect(onUpdateSpy).toHaveBeenCalledWith({
           node: expect.any(Object),

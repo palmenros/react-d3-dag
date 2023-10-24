@@ -1,9 +1,15 @@
 import React, { SyntheticEvent } from 'react';
+import { GraphNode as DagNode } from 'd3-dag';
 import { select } from 'd3-selection';
-
-import { Orientation, Point, TreeNodeDatum, RenderCustomNodeElementFn } from '../types/common';
-import DefaultNodeElement from './DefaultNodeElement';
-import { DagNode } from 'd3-dag';
+import {
+  Orientation,
+  Point,
+  TreeNodeDatum,
+  RawNodeDatum,
+  RenderCustomNodeElementFn,
+  AddChildrenFunction,
+} from '../types/common.js';
+import DefaultNodeElement from './DefaultNodeElement.js';
 
 type NodeEventHandler = (dagNode: DagNode<TreeNodeDatum>, evt: SyntheticEvent) => void;
 
@@ -25,11 +31,14 @@ type NodeProps = {
   onNodeMouseOver: NodeEventHandler;
   onNodeMouseOut: NodeEventHandler;
   subscriptions: object;
+  centerNode: (graphNode: DagNode<TreeNodeDatum>) => void;
+  handleAddChildrenToNode: (nodeId: string, children: RawNodeDatum[]) => void;
 };
 
 type NodeState = {
   transform: string;
   initialStyle: { opacity: number };
+  wasClicked: boolean;
 };
 
 export default class Node extends React.Component<NodeProps, NodeState> {
@@ -40,6 +49,7 @@ export default class Node extends React.Component<NodeProps, NodeState> {
     initialStyle: {
       opacity: 0,
     },
+    wasClicked: false,
   };
 
   componentDidMount() {
@@ -47,18 +57,28 @@ export default class Node extends React.Component<NodeProps, NodeState> {
   }
 
   componentDidUpdate() {
+    if (this.state.wasClicked) {
+      this.props.centerNode(this.props.dagNode);
+      this.setState({ wasClicked: false });
+    }
     this.commitTransform();
   }
 
-  shouldComponentUpdate(nextProps: NodeProps) {
-    return this.shouldNodeTransform(this.props, nextProps);
+  shouldComponentUpdate(nextProps: NodeProps, nextState: NodeState) {
+    return this.shouldNodeTransform(this.props, nextProps, this.state, nextState);
   }
 
-  shouldNodeTransform = (ownProps: NodeProps, nextProps: NodeProps) =>
+  shouldNodeTransform = (
+    ownProps: NodeProps,
+    nextProps: NodeProps,
+    ownState: NodeState,
+    nextState: NodeState
+  ) =>
     nextProps.subscriptions !== ownProps.subscriptions ||
     nextProps.position.x !== ownProps.position.x ||
     nextProps.position.y !== ownProps.position.y ||
-    nextProps.orientation !== ownProps.orientation;
+    nextProps.orientation !== ownProps.orientation ||
+    nextState.wasClicked !== ownState.wasClicked;
 
   setTransform(
     position: NodeProps['position'],
@@ -88,9 +108,7 @@ export default class Node extends React.Component<NodeProps, NodeState> {
         .style('opacity', opacity)
         .on('end', done);
     } else {
-      select(this.nodeRef)
-        .attr('transform', transform)
-        .style('opacity', opacity);
+      select(this.nodeRef).attr('transform', transform).style('opacity', opacity);
       done();
     }
   }
@@ -113,14 +131,19 @@ export default class Node extends React.Component<NodeProps, NodeState> {
       onNodeClick: this.handleOnClick,
       onNodeMouseOver: this.handleOnMouseOver,
       onNodeMouseOut: this.handleOnMouseOut,
+      addChildren: this.handleAddChildren,
     };
 
     return renderNode(nodeProps);
   };
 
-  handleNodeToggle = () => this.props.onNodeToggle(this.props.data.__rd3dag.id);
+  handleNodeToggle = () => {
+    this.setState({ wasClicked: true });
+    this.props.onNodeToggle(this.props.data.__rd3dag.id);
+  };
 
   handleOnClick = evt => {
+    this.setState({ wasClicked: true });
     this.props.onNodeClick(this.props.dagNode, evt);
   };
 
@@ -130,6 +153,10 @@ export default class Node extends React.Component<NodeProps, NodeState> {
 
   handleOnMouseOut = evt => {
     this.props.onNodeMouseOut(this.props.dagNode, evt);
+  };
+
+  handleAddChildren: AddChildrenFunction = childrenData => {
+    this.props.handleAddChildrenToNode(this.props.data.__rd3dag.id, childrenData);
   };
 
   componentWillLeave(done) {
@@ -147,7 +174,10 @@ export default class Node extends React.Component<NodeProps, NodeState> {
           this.nodeRef = n;
         }}
         style={this.state.initialStyle}
-        className={[data.children ? 'rd3dag-node' : 'rd3dag-leaf-node', nodeClassName]
+        className={[
+          data.children && data.children.length > 0 ? 'rd3dag-node' : 'rd3dag-leaf-node',
+          nodeClassName,
+        ]
           .join(' ')
           .trim()}
         transform={this.state.transform}

@@ -51,6 +51,7 @@ describe('<Node />', () => {
     onClick: () => {},
     onMouseOver: () => {},
     onMouseOut: () => {},
+    centerNode: () => {},
     subscriptions: {},
     allowForeignObjects: false,
   };
@@ -63,42 +64,32 @@ describe('<Node />', () => {
   it('has the correct `id` attribute value', () => {
     const renderedComponent = shallow(<Node {...mockProps} />);
 
-    expect(
-      renderedComponent
-        .find('g')
-        .first()
-        .prop('id')
-    ).toBe(data.__rd3dag.id);
+    expect(renderedComponent.find('g').first().prop('id')).toBe(data.__rd3dag.id);
   });
 
-  it('applies correct base className if `data.children` is defined', () => {
+  it('applies correct base className if `data.children` is defined and not empty', () => {
     const leafNodeComponent = shallow(<Node {...mockProps} />);
-    const nodeComponent = shallow(<Node {...mockProps} data={{ ...data, children: [] }} />);
+    const leafNodeComponentWithEmptyChildren = shallow(
+      <Node {...mockProps} data={{ ...data, children: [] }} />
+    );
+    const nodeComponent = shallow(
+      <Node {...mockProps} data={{ ...data, children: [{ name: 'leaf' }] }} />
+    );
 
-    expect(
-      leafNodeComponent
-        .find('g')
-        .first()
-        .prop('className')
-    ).toBe('rd3dag-leaf-node');
-    expect(
-      nodeComponent
-        .find('g')
-        .first()
-        .prop('className')
-    ).toBe('rd3dag-node');
+    expect(leafNodeComponent.find('g').first().prop('className')).toBe('rd3dag-leaf-node');
+    expect(leafNodeComponentWithEmptyChildren.find('g').first().prop('className')).toBe(
+      'rd3dag-leaf-node'
+    );
+    expect(nodeComponent.find('g').first().prop('className')).toBe('rd3dag-node');
   });
 
   it('applies `nodeClassName` if defined', () => {
     const fixture = 'additionalNodeClass';
     const leafNodeComponent = shallow(<Node {...mockProps} nodeClassName={fixture} />);
 
-    expect(
-      leafNodeComponent
-        .find('g')
-        .first()
-        .prop('className')
-    ).toBe(['rd3dag-leaf-node', fixture].join(' '));
+    expect(leafNodeComponent.find('g').first().prop('className')).toBe(
+      ['rd3dag-leaf-node', fixture].join(' ')
+    );
   });
 
   it.skip('applies correct `transform` prop based on its `orientation`', () => {
@@ -106,18 +97,8 @@ describe('<Node />', () => {
     const verticalTransform = `translate(${mockProps.parent.x},${mockProps.parent.y})`;
     const horizontalComponent = shallow(<Node {...mockProps} />);
     const verticalComponent = shallow(<Node {...mockProps} orientation="vertical" />);
-    expect(
-      horizontalComponent
-        .find('g')
-        .first()
-        .prop('transform')
-    ).toBe(horizontalTransform);
-    expect(
-      verticalComponent
-        .find('g')
-        .first()
-        .prop('transform')
-    ).toBe(verticalTransform);
+    expect(horizontalComponent.find('g').first().prop('transform')).toBe(horizontalTransform);
+    expect(verticalComponent.find('g').first().prop('transform')).toBe(verticalTransform);
   });
 
   describe('Events', () => {
