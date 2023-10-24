@@ -64,6 +64,9 @@
     "d3-visualization",
     "chart"
   ],
+  "engines": {
+    "node": ">=14"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
