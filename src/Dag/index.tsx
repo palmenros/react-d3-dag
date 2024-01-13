@@ -31,7 +31,7 @@ const hierarchy = dagHierarchy() as DagHierarchy<any> as DagHierarchy<TreeNodeDa
 
 type TreeState = {
   dataRef: TreeProps['data'];
-  data: TreeNodeDatum[];
+  data: any;
   d3: { translate: Point; scale: number };
   isTransitioning: boolean;
   isInitialRenderForDataset: boolean;
@@ -475,8 +475,12 @@ class Dag extends React.Component<TreeProps, TreeState> {
     //     : separation.nonSiblings
     // );
 
-    const dag = hierarchy(this.state.data[0]);
+    const dag = this.state.data;
+    console.log('Pre-layout DAG: ', dag);
+
     layout(dag);
+    console.log('Post-layout DAG: ', dag);
+
     const nodes = [...dag.nodes()];
     const links = [...dag.links()];
 
